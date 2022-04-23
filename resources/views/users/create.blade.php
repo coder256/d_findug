@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Admins')
+@section('title', 'Users')
 
 @section('content')
     <div class="mb-3 card card-body text-center">

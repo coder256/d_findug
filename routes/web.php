@@ -21,3 +21,5 @@ Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::resource('user', 'App\Http\Controllers\UserController')->middleware('auth');
+Route::resource('item', 'App\Http\Controllers\ItemController')->middleware('auth');
+Route::resource('item-request', 'App\Http\Controllers\ItemRequestController')->middleware('auth');

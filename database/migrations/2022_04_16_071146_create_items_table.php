@@ -13,8 +13,15 @@ class CreateItemTable extends Migration
      */
     public function up()
     {
-        Schema::create('item', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('found_in');
+            $table->string('main_image')->nullable();
+            $table->string('other_images')->nullable();
+            $table->integer('created_by');
+            $table->enum('recovered', array('yes', 'no'))->default('no');
+            $table->enum('status', array(1, 0))->default(0);
             $table->timestamps();
         });
     }
@@ -26,6 +33,6 @@ class CreateItemTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item');
+        Schema::dropIfExists('items');
     }
 }

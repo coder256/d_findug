@@ -148,13 +148,13 @@
                             </a>
                             <ul>
                                 <li>
-                                    <a href="{{--{{ route('ioa.create') }}--}}">
+                                    <a href="{{ route('item.create') }}">
                                         <i class="metismenu-icon">
                                         </i>Create
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{--{{ route('ioa.create') }}--}}">
+                                    <a href="{{ route('item.index') }}">
                                         <i class="metismenu-icon">
                                         </i>List
                                     </a>

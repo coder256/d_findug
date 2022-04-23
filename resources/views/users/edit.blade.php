@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Admins')
+@section('title', 'Users')
 
 @section('content')
     <div class="mb-3 card card-body text-center">
@@ -90,7 +90,7 @@
 
     <div class="main-card mb-3 card">
         <div class="card-body">
-            <form id="data" method="post" action="{{ route('admin.update', $user->id) }}">
+            <form id="data" method="post" action="{{ route('user.update', $user->id) }}">
                 @csrf
                 @method('PUT')
                 <input name="part" type="hidden" value="pass">

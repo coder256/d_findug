@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Item;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -33,9 +34,9 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $admins = DB::table('users')->get();
+        $items = DB::table('items')->get();
 
-        return view('users.index', compact('admins'));
+        return view('items.index', compact('items'));
     }
 
     /**
@@ -45,7 +46,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        return view('users.create');
+        return view('items.create');
     }
 
     /**
@@ -57,112 +58,137 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'tel' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'role' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'confirmed'],
+            'name' => ['required', 'string', 'max:255'],
+            'found_in' => ['required', 'string', 'max:255'],
+            'main_image' => 'required|mimes:jpeg,jpg,png|max:2048',
+            'other_images.*' => 'mimes:jpeg,jpg,png|max:2048'
         ]);
 
-        $user = new User([
-            'first_name' => $request->get('first_name'),
-            'last_name' => $request->get('last_name'),
-            'tel' => $request->get('tel'),
-            'email' => $request->get('email'),
-            'role' => $request->get('role'),
-            'status' => '0',
-            'password' => Hash::make($request->get('password')),
+        $item = new Item([
+            'name' => $request->get('name'),
+            'found_in' => $request->get('found_in'),
+            'created_by' => Auth::user()->id,
         ]);
 
-        if ($user->save()) {
-            session()->flash('message_success', 'User account has been created.');
+        if ($item->save()) {
+            $imageNames = [];
+            $mainImage = $item->id . '-main.' . $request->file('main_image')->extension();
+            $request->file('main_image')->move(public_path() . '/items/', $mainImage);
+
+            $counter = 1;
+            foreach ($request->file('other_images') as $image) {
+                $name = $item->id . '-' . $counter . '.' . $image->extension();
+                $image->move(public_path() . '/items/', $name);
+                $imageNames[] = $name;
+                $counter++;
+            }
+
+            $item->update(
+                array(
+                    'main_image' => $mainImage,
+                    'other_images' => implode(',', $imageNames))
+            );
+
+            session()->flash('message_success', 'Item has been created.');
         } else {
-            session()->flash('message_fail', 'User account has not been added.');
+            session()->flash('message_fail', 'Item has not been added.');
         }
 
-        return redirect('/user');
+        return redirect('/item');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param User $user
+     * @param Item $item
      * @return Application|Factory|View|Response
      */
-    public function show(User $user)
+    public function show(Item $item)
     {
-        return view('users.show', compact('user'));
+        return view('items.show', compact('item'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param User $user
+     * @param Item $item
      * @return Application|Factory|View|Response
      */
-    public function edit(User $user)
+    public function edit(Item $item)
     {
-        return view('admins.edit', compact('user'));
+        return view('items.edit', compact('item'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param User $user
+     * @param Item $item
      * @return Application|RedirectResponse|Response|Redirector
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, Item $item)
     {
         if ($request->get('part') == 'data') {
             $request->validate([
-                'first_name' => ['required', 'string', 'max:255'],
-                'last_name'  => ['required', 'string', 'max:255'],
-                'tel'        => ['required', 'string', 'max:255'],
-                'email'      => ['required', 'string', 'email', 'max:255'],
-                'role'       => ['required', 'string'],
+                'name' => ['required', 'string', 'max:255'],
+                'found_in' => ['required', 'string', 'max:255'],
+                'status' => ['required', 'integer'],
             ]);
 
-            if ($user->update($request->all())) {
-                session()->flash('message_success', 'User updated successfully.');
+            if ($item->update($request->all())) {
+                session()->flash('message_success', 'Item updated successfully.');
             } else {
-                session()->flash('message_fail', 'User not updated successfully.');
+                session()->flash('message_fail', 'Item not updated successfully.');
             }
         } else {
             $request->validate([
-                'password' => ['required', 'string', 'min:8', 'confirmed']
+                'main_image' => 'required|mimes:jpeg,jpg,png|max:2048',
+                'other_images.*' => 'mimes:jpeg,jpg,png|max:2048'
             ]);
 
-            $result = $user->update(array(
-                'password' => Hash::make($request->get('password'))
-            ));
+            $imageNames = [];
+            $mainImage = $item->id . '-main.' . $request->file('main_image')->extension();
+            $request->file('main_image')->move(public_path() . '/items/', $mainImage);
+
+            $counter = 1;
+            foreach ($request->file('other_images') as $image) {
+                $name = $item->id . '-' . $counter . '.' . $image->extension();
+                $image->move(public_path() . '/items/', $name);
+                $imageNames[] = $name;
+                $counter++;
+            }
+
+            $result = $item->update(
+                array(
+                    'main_image' => $mainImage,
+                    'other_images' => implode(',', $imageNames))
+            );
 
             if ($result) {
-                session()->flash('message_success', 'User updated successfully.');
+                session()->flash('message_success', 'Item updated successfully.');
             } else {
-                session()->flash('message_fail', 'User not updated successfully.');
+                session()->flash('message_fail', 'Item not updated successfully.');
             }
         }
 
-        return redirect('/user/' . $user->id . '/edit');
+        return redirect('/item/' . $item->id . '/edit');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param User $user
+     * @param Item $item
      * @return Application|RedirectResponse|Response|Redirector
      * @throws Exception
      */
-    public function destroy(User $user)
+    public function destroy(Item $item)
     {
-        if ($user->delete()) {
-            session()->flash('message_success', 'User deleted successfully.');
+        if ($item->delete()) {
+            session()->flash('message_success', 'Item deleted successfully.');
         } else {
-            session()->flash('message_fail', 'User not deleted successfully.');
+            session()->flash('message_fail', 'Item not deleted successfully.');
         }
 
-        return redirect('/user');
+        return redirect('/item');
     }
 }

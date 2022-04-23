@@ -103,7 +103,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('admins.edit', compact('user'));
+        return view('users.edit', compact('user'));
     }
 
     /**
