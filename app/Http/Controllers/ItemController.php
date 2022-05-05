@@ -14,6 +14,7 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -75,12 +76,15 @@ class ItemController extends Controller
             $mainImage = $item->id . '-main.' . $request->file('main_image')->extension();
             $request->file('main_image')->move(public_path() . '/items/', $mainImage);
 
-            $counter = 1;
-            foreach ($request->file('other_images') as $image) {
-                $name = $item->id . '-' . $counter . '.' . $image->extension();
-                $image->move(public_path() . '/items/', $name);
-                $imageNames[] = $name;
-                $counter++;
+            if ($request->hasFile('other_images')) {
+                $counter = 1;
+                foreach ($request->file('other_images') as $image) {
+                    $name = $item->id . '-' . $counter . '.' . $image->extension();
+                    $image->move(public_path() . '/items/', $name);
+                    //Storage::disk('public')->put('items/'.$name, $image);
+                    $imageNames[] = $name;
+                    $counter++;
+                }
             }
 
             $item->update(
