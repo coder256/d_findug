@@ -14,7 +14,9 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ItemController extends Controller
 {
@@ -187,8 +189,20 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
+        $generateImagePath = function ($filename) {
+            return public_path() . '/items/' . $filename;
+        };
+        $image = public_path() . '/items/' . $item->main_image;
+        $images = array_map($generateImagePath, explode(',',$item->other_images));
+        array_push($images,$image);
+
         if ($item->delete()) {
-            session()->flash('message_success', 'Item deleted successfully.');
+            //$image = public_path() . '/items/' . $item->main_image;
+            $fd = false;
+            if (File::delete($images)) {
+                $fd = true;
+            }
+            session()->flash('message_success', 'Item deleted successfully ::' . $fd);
         } else {
             session()->flash('message_fail', 'Item not deleted successfully.');
         }
