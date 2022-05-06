@@ -197,7 +197,6 @@ class ItemController extends Controller
         array_push($images,$image);
 
         if ($item->delete()) {
-            //$image = public_path() . '/items/' . $item->main_image;
             $fd = false;
             if (File::delete($images)) {
                 $fd = true;
@@ -208,5 +207,33 @@ class ItemController extends Controller
         }
 
         return redirect('/item');
+    }
+
+    public function pending(Request $request) {
+        $items = Item::where('status', '0')->get();
+        //$items = DB::table('items')->where('status', false)->get();
+
+        return view('items.pending', [
+            'items' => $items
+        ]);
+    }
+
+    public function taken(Request $request) {
+        $items = Item::where('recovered', 'yes')->get();
+
+        return view('items.taken', [
+            'items' => $items
+        ]);
+    }
+
+    public function approve(Request $request) {
+        $item = Item::find($request->id);
+        $item->status = $request->status;
+        if ($item->save()) {
+            session()->flash('message_success', 'Item approved successfully.');
+        } else {
+            session()->flash('message_fail', 'Item not approved successfully.');
+        }
+        return back();
     }
 }

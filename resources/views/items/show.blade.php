@@ -8,6 +8,16 @@
             <div class="mb-3 card card-body text-center">
                 <h3>Item</h3>
             </div>
+            <div class="card-title mb-3">
+                @if($item->status == '0')
+                    <form action="{{ route('item.approve', $item->id) }}" method="post" class="float-end">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="status" value="1">
+                        <button class="btn btn-outline-success" type="submit"><span class="fa fa-check"></span> Approve</button>
+                    </form>
+                @endif
+            </div>
             <form>
                 <div class="form-row">
                     <div class="col-md-6">

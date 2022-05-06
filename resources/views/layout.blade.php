@@ -11,13 +11,13 @@
     <meta name="description" content="Apprenticeship.">
     <meta name="msapplication-tap-highlight" content="no">
 
-    <title>IFindUG</title>
+    <title>IFindUG - @yield('title')</title>
 
-    <link rel="icon" href="{{ asset('images/android-chrome-512x512.png') }}" sizes="512x512" type="image/png">
-    <link rel="icon" href="{{ asset('images/android-chrome-192x192.png') }}" sizes="192x192" type="image/png">
-    <link rel="icon" href="{{ asset('images/favicon-16x16.png') }}" sizes="16x16" type="image/png">
-    <link rel="icon" href="{{ asset('images/favicon-32x32.png') }}" sizes="32x32" type="image/png">
-    <link rel="icon" href="{{ asset('images/apple-touch-icon.png') }}" sizes="180x180" type="image/png">
+    {{--<link rel="icon" href="{{ asset('images/android-chrome-512x512.png') }}" sizes="512x512" type="image/png">--}}
+    {{--<link rel="icon" href="{{ asset('images/android-chrome-192x192.png') }}" sizes="192x192" type="image/png">--}}
+    {{--<link rel="icon" href="{{ asset('images/favicon-16x16.png') }}" sizes="16x16" type="image/png">--}}
+    {{--<link rel="icon" href="{{ asset('images/favicon-32x32.png') }}" sizes="32x32" type="image/png">--}}
+    {{--<link rel="icon" href="{{ asset('images/apple-touch-icon.png') }}" sizes="180x180" type="image/png">--}}
     <link rel="icon" href="{{ asset('images/favicon.ico') }}">
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -160,13 +160,13 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{--{{ route('ioa.create') }}--}}">
+                                    <a href="{{ route('item.pending') }}">
                                         <i class="metismenu-icon">
                                         </i>Pending Verification
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{--{{ route('ioa.create') }}--}}">
+                                    <a href="{{ route('item.taken') }}">
                                         <i class="metismenu-icon">
                                         </i>Taken
                                     </a>
