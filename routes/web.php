@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +18,9 @@ use App\Http\Controllers\ItemController;
 
 Auth::routes();
 
-Route::get('/', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm']);
+Route::get('/', [HomeController::class, 'index'])->name('index');
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
 
 Route::resource('user', 'App\Http\Controllers\UserController')->middleware('auth');
 Route::get('item/filter/pending',[ItemController::class,'pending'])->name('item.pending');
