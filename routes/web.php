@@ -19,6 +19,8 @@ use App\Http\Controllers\HomeController;
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
+Route::get('/search', [HomeController::class, 'search'])->name('home.search');
+
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
 

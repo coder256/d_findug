@@ -1,5 +1,7 @@
 @extends('home.layout')
 
+@section('title', 'Home')
+
 @section('content')
     <!-- Header-->
     <header class="masthead text-center text-white">
